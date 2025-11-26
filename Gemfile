@@ -28,6 +28,16 @@ gem "solid_cache"
 gem "solid_queue"
 gem "solid_cable"
 
+gem "devise"
+gem "activeadmin"
+gem "sassc-rails"
+gem "faker"
+gem "nokogiri"
+gem "httparty"
+gem "csv"
+gem "sassc-rails"
+gem "sprockets-rails"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
