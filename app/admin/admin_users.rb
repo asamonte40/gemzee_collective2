@@ -4,7 +4,7 @@ ActiveAdmin.register AdminUser do
   index do
     selectable_column
     id_column
-    column :email
+    column :emails
     column :current_sign_in_at
     column :sign_in_count
     column :created_at
@@ -24,5 +24,4 @@ ActiveAdmin.register AdminUser do
     end
     f.actions
   end
-
 end
