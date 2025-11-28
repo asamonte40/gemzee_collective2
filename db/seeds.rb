@@ -37,31 +37,19 @@ User.create!(
   )
 end
 
-# Categories
-categories = [ "Necklaces", "Earrings", "Rings", "Bracelets" ].map do |name|
-  Category.find_or_create_by!(name: name)
-end
-
-# Faker products
-100.times do
-  Product.create!(
-    name: Faker::Commerce.product_name,
-    description: Faker::Lorem.sentence(word_count: 10),
-    price: Faker::Commerce.price(range: 10..500.0),
-    stock_quantity: rand(1..50),
-    category: categories.sample
-  )
-end
 
 # CSV import
 csv_file_path = Rails.root.join("db/data/cartier_catalog.csv")
 
 CSV.foreach(csv_file_path, headers: true) do |row|
-  category = Category.find_or_create_by!(name: row["category"].presence || "Uncategorized")
+  # FIXED: use CSV column "categorie"
+  category = Category.find_or_create_by!(
+    name: row["categorie"].presence || "Uncategorized"
+  )
 
   product = Product.create!(
-    name: row["name"].presence || "Unnamed Product",
-    description: row["description"].presence || "No description",
+    name: row["title"].presence || "Unnamed Product",
+    description: row["description"].presence || "No description available",
     price: row["price"].to_f,
     stock_quantity: rand(1..50),
     category: category
