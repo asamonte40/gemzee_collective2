@@ -35,8 +35,8 @@ gem "faker"
 gem "nokogiri"
 gem "httparty"
 gem "csv"
-gem "sassc-rails"
 gem "sprockets-rails"
+gem "kaminari"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false

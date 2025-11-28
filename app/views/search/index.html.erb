@@ -1,0 +1,28 @@
+<h1>Search Results</h1>
+
+<%= render "shared/search_form" %>
+
+<hr>
+
+<% if @products.any? %>
+  <div class="products-grid">
+    <% @products.each do |product| %>
+      <div class="product-card">
+        <% if product.image.attached? %>
+          <%= image_tag product.image, class: "product-image" %>
+        <% else %>
+          <p>No image</p>
+        <% end %>
+
+        <h3><%= link_to product.name, product_path(product) %></h3>
+        <p><%= number_to_currency(product.price) %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="pagination">
+    <%= paginate @products %>
+  </div>
+<% else %>
+  <p>No results found.</p>
+<% end %>

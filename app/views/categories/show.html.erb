@@ -1,0 +1,16 @@
+<h1><%= @category.name %></h1>
+
+<div class="products-grid">
+  <% @products.each do |product| %>
+    <div class="product-card">
+      <%= link_to product_path(product) do %>
+        <% if product.image.attached? %>
+          <%= image_tag product.image, width: 200 %>
+        <% end %>
+        <h3><%= product.name %></h3>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<%= paginate @products %>

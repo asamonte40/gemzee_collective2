@@ -1,0 +1,26 @@
+<h1>All Products</h1>
+
+<%= render "shared/search_form" %>
+
+<div>
+  <strong>Filters:</strong>
+  <%= link_to "All", products_path %> |
+  <%= link_to "On Sale", products_path(filter: "on_sale") %> |
+  <%= link_to "New", products_path(filter: "new") %> |
+  <%= link_to "Recently Updated", products_path(filter: "recently_updated") %>
+</div>
+
+<div class="products-grid">
+  <% @products.each do |product| %>
+    <div class="product-card">
+      <% if product.image.attached? %>
+        <%= image_tag product.image, width: 200 %>
+      <% end %>
+
+      <h3><%= link_to product.name, product_path(product) %></h3>
+      <p>$<%= product.price %></p>
+    </div>
+  <% end %>
+</div>
+
+<%= paginate @products %>
