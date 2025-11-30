@@ -1,6 +1,4 @@
 class Order < ApplicationRecord
-  self.primary_key = "order_id"  # Use your custom PK
-
   belongs_to :user, foreign_key: "user_id"
   has_many :order_items, foreign_key: "order_id", dependent: :destroy
   has_many :customizations, through: :order_items
@@ -32,7 +30,7 @@ class Order < ApplicationRecord
     self.total_price = subtotal + gst_amount + pst_amount + hst_amount
   end
 
-  # 3.2.2 - Mark order as paid
+  # mark order as paid
   def mark_as_paid!(stripe_payment_id, stripe_customer_id)
     update!(
       status: "paid",
@@ -42,8 +40,16 @@ class Order < ApplicationRecord
     )
   end
 
-  # 3.2.2 - Mark order as shipped
+  # mark order as shipped
   def mark_as_shipped!
     update!(status: "shipped")
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    [ "order_items", "user" ]
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    [ "order_id", "status", "subtotal", "gst_amount", "pst_amount", "hst_amount", "total_price", "created_at", "paid_at" ]
   end
 end

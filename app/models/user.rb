@@ -14,4 +14,12 @@ class User < ApplicationRecord
     return nil unless address.present?
     "#{address}, #{city}, #{province&.code} #{postal_code}"
   end
+
+  def self.ransackable_attributes(auth_object = nil)
+    [ "id", "name", "email", "created_at", "updated_at" ]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
 end
