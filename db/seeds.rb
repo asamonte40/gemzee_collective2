@@ -17,6 +17,26 @@ Order.destroy_all
 Product.destroy_all
 Category.destroy_all
 User.destroy_all
+Province.destroy_all
+
+provinces_data = [
+  { name: 'Alberta', code: 'AB', gst: 5.0, pst: 0.0, hst: 0.0 },
+  { name: 'British Columbia', code: 'BC', gst: 5.0, pst: 7.0, hst: 0.0 },
+  { name: 'Manitoba', code: 'MB', gst: 5.0, pst: 7.0, hst: 0.0 },
+  { name: 'New Brunswick', code: 'NB', gst: 0.0, pst: 0.0, hst: 15.0 },
+  { name: 'Newfoundland and Labrador', code: 'NL', gst: 0.0, pst: 0.0, hst: 15.0 },
+  { name: 'Northwest Territories', code: 'NT', gst: 5.0, pst: 0.0, hst: 0.0 },
+  { name: 'Nova Scotia', code: 'NS', gst: 0.0, pst: 0.0, hst: 15.0 },
+  { name: 'Nunavut', code: 'NU', gst: 5.0, pst: 0.0, hst: 0.0 },
+  { name: 'Ontario', code: 'ON', gst: 0.0, pst: 0.0, hst: 13.0 },
+  { name: 'Prince Edward Island', code: 'PE', gst: 0.0, pst: 0.0, hst: 15.0 },
+  { name: 'Quebec', code: 'QC', gst: 5.0, pst: 9.975, hst: 0.0 },
+  { name: 'Saskatchewan', code: 'SK', gst: 5.0, pst: 6.0, hst: 0.0 },
+  { name: 'Yukon', code: 'YT', gst: 5.0, pst: 0.0, hst: 0.0 }
+]
+
+provinces_data.each { |p| Province.create!(p) }
+puts "Created #{Province.count} provinces"
 
 # Users
 User.create!(
@@ -71,6 +91,6 @@ CSV.foreach(csv_file_path, headers: true) do |row|
     puts "✅ Attached image for #{product.name}"
 
   rescue => e
-    puts "⚠ Failed attaching image for #{product.name}: #{e.message}"
+    puts "Failed attaching image for #{product.name}: #{e.message}"
   end
 end
