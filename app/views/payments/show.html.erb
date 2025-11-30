@@ -1,0 +1,84 @@
+<h1>Payment</h1>
+
+<div class="payment-container">
+  <div class="payment-form">
+    <h2>Order #<%= @order.id %></h2>
+
+    <div class="shipping-info">
+      <h3>Shipping To:</h3>
+      <p><%= @order.shipping_address %></p>
+      <p><%= @order.shipping_city %>, <%= @order.shipping_province_code %></p>
+    </div>
+
+    <%# 3.3.1 - Stripe payment form %>
+    <%= form_with url: create_payment_path(@order), method: :post, local: true, id: 'payment-form' do |f| %>
+      <div id="card-element"></div>
+      <div id="card-errors"></div>
+
+      <%= f.hidden_field :payment_method_id, id: 'payment-method-id' %>
+      <%= f.submit 'Pay Now', class: 'btn btn-primary', id: 'submit-payment' %>
+    <% end %>
+
+    <div class="test-notice">
+      <p><strong>TEST MODE</strong></p>
+      <p>Card: 4242 4242 4242 4242</p>
+      <p>Expiry: Any future date, CVC: Any 3 digits</p>
+    </div>
+  </div>
+
+  <div class="order-summary">
+    <h2>Order Summary</h2>
+
+    <% @order.order_items.each do |item| %>
+      <div class="summary-item">
+        <span><%= item.product_name %> × <%= item.quantity %></span>
+        <span><%= number_to_currency(item.line_total) %></span>
+      </div>
+    <% end %>
+
+    <div class="order-totals">
+      <p>Subtotal: <%= number_to_currency(@order.subtotal) %></p>
+      <% if @order.gst_amount > 0 %>
+        <p>GST: <%= number_to_currency(@order.gst_amount) %></p>
+      <% end %>
+      <% if @order.pst_amount > 0 %>
+        <p>PST: <%= number_to_currency(@order.pst_amount) %></p>
+      <% end %>
+      <% if @order.hst_amount > 0 %>
+        <p>HST: <%= number_to_currency(@order.hst_amount) %></p>
+      <% end %>
+      <h3>Total: <%= number_to_currency(@order.total_price) %></h3>
+    </div>
+  </div>
+</div>
+
+<%# Stripe.js integration %>
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  var stripe = Stripe('YOUR_STRIPE_PUBLISHABLE_KEY');
+  var elements = stripe.elements();
+  var card = elements.create('card');
+  card.mount('#card-element');
+
+  card.on('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    displayError.textContent = event.error ? event.error.message : '';
+  });
+
+  var form = document.getElementById('payment-form');
+  form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const {paymentMethod, error} = await stripe.createPaymentMethod({
+      type: 'card',
+      card: card,
+    });
+
+    if (error) {
+      document.getElementById('card-errors').textContent = error.message;
+    } else {
+      document.getElementById('payment-method-id').value = paymentMethod.id;
+      form.submit();
+    }
+  });
+</script>

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  # get "payments/show"
+  # get "payments/create"
   # get "checkout/new"
   # get "checkout/create"
   # get "cart/show"
@@ -35,9 +37,9 @@ Rails.application.routes.draw do
   delete "cart/remove/:id", to: "cart#remove", as: "remove_from_cart"
   delete "cart/clear", to: "cart#clear", as: "clear_cart"
 
-  get "/checkout", to: redirect("/checkout/new")
+  get "checkout", to: "checkout#new"
+  post "checkout", to: "checkout#create"
 
-  resource :checkout, only: [ :new, :create ]
 
   resources :orders, only: [ :index, :show ]
 

@@ -6,7 +6,15 @@ class Order < ApplicationRecord
   has_many :customizations, through: :order_items
 
   validates :status, presence: true
-  validates :total_price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :total_price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+
+  before_validation :calculate_totals_before_save
+
+  def calculate_totals_before_save
+    return if order_items.empty? || user.blank? || user.province.blank?
+
+    calculate_totals(user.province)
+  end
 
   def calculate_totals(province)
     self.subtotal = order_items.sum(&:line_total)

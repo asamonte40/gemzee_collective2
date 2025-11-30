@@ -1,33 +1,22 @@
-class CheckoutsController < ApplicationController
+class CheckoutController < ApplicationController
   before_action :authenticate_user!
   before_action :initialize_cart
   before_action :load_cart_items
   before_action :load_user_and_provinces
-  before_action :calculate_taxes
 
   def new
-    puts "DEBUG: current_user=#{current_user.inspect}"
-    @cart_items = get_cart_items
-    puts "DEBUG: cart_items=#{@cart_items.inspect}"
     redirect_to cart_path, alert: "Your cart is empty" if @cart_items.empty?
 
-    @user = current_user
-    @provinces = Province.all
-
-    # Calculate totals
+    # Always set a province for calculations
     @province = @user.province || Province.first
     calculate_totals(@province)
   end
 
   def create
-  @user = current_user
-
-    # Update user address if provided
+    # Update user address if provided in form
     if params[:user].present?
       unless @user.update(user_params)
-        @provinces = Province.all
-        @cart_items = get_cart_items
-        calculate_totals(@user.province)
+        set_defaults_for_render
         render :new and return
       end
     end
@@ -50,23 +39,26 @@ class CheckoutsController < ApplicationController
 
     # Add order items with denormalized product data
     session[:cart].each do |product_id, quantity|
-      product = Product.find(product_id)
-      @order.order_items.build(
-        product: product,
-        quantity: quantity
-        # price_at_purchase, product_name, product_description set by before_validation
-      )
-    end
+    product = Product.find_by(id: product_id)
+    next unless product # skip invalid product IDs
+
+    @order.order_items.build(
+      product: product,
+      quantity: quantity.to_i,          # ensure integer
+      price_at_purchase: product.price,
+      product_name: product.name,
+      product_description: product.description
+    )
+  end
 
     # Calculate totals with denormalized tax rates
     @order.calculate_totals(@user.province)
 
-    if @order.save
+    if @order.order_items.all?(&:valid?) && @order.save
       redirect_to payment_path(@order)
     else
-      @provinces = Province.all
-      @cart_items = get_cart_items
-      calculate_totals(@user.province)
+      @order.order_items.each { |item| puts item.errors.full_messages }
+      set_defaults_for_render
       render :new
     end
   end
@@ -110,7 +102,11 @@ class CheckoutsController < ApplicationController
     @provinces = Province.all
   end
 
-  def calculate_taxes
-    calculate_totals(@user.province || Province.first)
+  # Sets instance variables before rendering :new
+  def set_defaults_for_render
+    @provinces = Province.all
+    @cart_items = get_cart_items
+    @province = @user.province || Province.first
+    calculate_totals(@province)
   end
 end

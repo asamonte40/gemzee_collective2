@@ -50,7 +50,7 @@
     <%= link_to 'Continue Shopping', products_path %>
 
     <% if user_signed_in? %>
-      <%= link_to 'Proceed to Checkout', new_checkout_path, class: 'btn btn-primary' %>
+      <%= link_to 'Proceed to Checkout', checkout_path, class: 'btn btn-primary' %>
     <% else %>
       <p>Please <%= link_to 'login', new_user_session_path %> or
          <%= link_to 'sign up', new_user_registration_path %> to checkout</p>
