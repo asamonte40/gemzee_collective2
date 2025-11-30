@@ -1,0 +1,77 @@
+<h1>Checkout</h1>
+
+<div class="checkout-container">
+  <div class="checkout-form">
+    <h2>Shipping Information</h2>
+
+    <%= form_with url: checkout_path, method: :post, local: true do |f| %>
+      <% if @user.province.blank? %>
+        <div class="alert">Please provide your shipping address</div>
+
+        <%= fields_for :user do |uf| %>
+          <div class="form-group">
+            <%= uf.label :address %>
+            <%= uf.text_field :address, value: @user.address, required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= uf.label :city %>
+            <%= uf.text_field :city, value: @user.city, required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= uf.label :postal_code %>
+            <%= uf.text_field :postal_code, value: @user.postal_code, required: true %>
+          </div>
+
+          <div class="form-group">
+            <%= uf.label :province_id, "Province" %>
+            <%= uf.collection_select :province_id, @provinces, :id, :name,
+                                     { prompt: 'Select Province' },
+                                     { required: true } %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="address-display">
+          <p><strong><%= @user.name %></strong></p>
+          <p><%= @user.address %></p>
+          <p><%= @user.city %>, <%= @user.province.code %> <%= @user.postal_code %></p>
+          <p><%= link_to 'Change address', edit_user_registration_path %></p>
+        </div>
+      <% end %>
+
+      <%= f.submit 'Continue to Payment', class: 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <%# 3.1.3 - Display invoice with taxes %>
+  <div class="order-summary">
+    <h2>Order Summary</h2>
+
+    <div class="order-items">
+      <% @cart_items.each do |item| %>
+        <div class="summary-item">
+          <span><%= item[:product].name %> × <%= item[:quantity] %></span>
+          <span><%= number_to_currency(item[:product].price * item[:quantity]) %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="order-totals">
+      <p>Subtotal: <%= number_to_currency(@subtotal) %></p>
+
+      <%# 3.1.3 - Show tax breakdown based on province %>
+      <% if @gst > 0 %>
+        <p>GST (<%= @province.gst %>%): <%= number_to_currency(@gst) %></p>
+      <% end %>
+      <% if @pst > 0 %>
+        <p>PST (<%= @province.pst %>%): <%= number_to_currency(@pst) %></p>
+      <% end %>
+      <% if @hst > 0 %>
+        <p>HST (<%= @province.hst %>%): <%= number_to_currency(@hst) %></p>
+      <% end %>
+
+      <h3>Total: <%= number_to_currency(@total) %></h3>
+    </div>
+  </div>
+
