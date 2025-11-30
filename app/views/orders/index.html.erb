@@ -1,0 +1,23 @@
+<h1>My Orders</h1>
+
+<% if @orders.empty? %>
+  <p>You haven't placed any orders yet.</p>
+  <%= link_to 'Start Shopping', products_path %>
+<% else %>
+  <% @orders.each do |order| %>
+    <div class="order-card">
+      <h3>Order #<%= order.id %></h3>
+      <p>Status: <span class="status-<%= order.status %>"><%= order.status.titleize %></span></p>
+      <p>Date: <%= order.created_at.strftime('%B %d, %Y') %></p>
+      <p>Total: <%= number_to_currency(order.total_price) %></p>
+
+      <div class="order-items">
+        <% order.order_items.each do |item| %>
+          <p><%= item.product_name %> (× <%= item.quantity %>)</p>
+        <% end %>
+      </div>
+
+      <%= link_to 'View Details', order_path(order) %>
+    </div>
+  <% end %>
+<% end %>

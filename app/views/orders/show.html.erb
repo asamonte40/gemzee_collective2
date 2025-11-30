@@ -1,0 +1,51 @@
+<h1>Order #<%= @order.id %></h1>
+
+<div class="order-details">
+  <p><strong>Status:</strong> <%= @order.status.titleize %></p>
+  <p><strong>Order Date:</strong> <%= @order.created_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+  <% if @order.paid_at %>
+    <p><strong>Paid:</strong> <%= @order.paid_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+  <% end %>
+
+  <h3>Shipping Address</h3>
+  <p><%= @order.shipping_address %></p>
+  <p><%= @order.shipping_city %>, <%= @order.shipping_province_code %></p>
+
+  <h3>Items Ordered</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @order.order_items.each do |item| %>
+        <tr>
+          <td><%= item.product_name %></td>
+          <td><%= number_to_currency(item.price_at_purchase) %></td>
+          <td><%= item.quantity %></td>
+          <td><%= number_to_currency(item.line_total) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="order-totals">
+    <p>Subtotal: <%= number_to_currency(@order.subtotal) %></p>
+    <% if @order.gst_amount > 0 %>
+      <p>GST (<%= @order.gst_rate %>%): <%= number_to_currency(@order.gst_amount) %></p>
+    <% end %>
+    <% if @order.pst_amount > 0 %>
+      <p>PST (<%= @order.pst_rate %>%): <%= number_to_currency(@order.pst_amount) %></p>
+    <% end %>
+    <% if @order.hst_amount > 0 %>
+      <p>HST (<%= @order.hst_rate %>%): <%= number_to_currency(@order.hst_amount) %></p>
+    <% end %>
+    <h3>Total: <%= number_to_currency(@order.total_price) %></h3>
+  </div>
+</div>
+
+<%= link_to 'Back to Orders', orders_path %>
