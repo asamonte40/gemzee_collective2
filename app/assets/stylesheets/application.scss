@@ -1,0 +1,535 @@
+/*
+ * This is a manifest file that'll be compiled into application.css.
+ *
+ * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
+ * application-wide styles in this file, but keep in mind that CSS precedence will follow the standard
+ * cascading order, meaning styles declared later in the document or manifest will override earlier ones,
+ * depending on specificity.
+ *
+ * Consider organizing styles into separate files for maintainability.
+ */
+@import "bootstrap/scss/bootstrap";
+@import "custom";
+
+$primary-color: #2c3e50;
+$secondary-color: #3498db;
+$accent-color: #e74c3c;
+$success-color: #27ae60;
+$warning-color: #f39c12;
+$text-color: #333;
+$light-bg: #f8f9fa;
+$border-color: #dee2e6;
+
+// Spacing variables (operators)
+$base-spacing: 1rem;
+$spacing-small: $base-spacing * 0.5;
+$spacing-medium: $base-spacing * 1.5;
+$spacing-large: $base-spacing * 2;
+
+// Typography
+$font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 1rem;
+$font-size-large: $font-size-base * 1.25;
+$font-size-small: $font-size-base * 0.875;
+
+// 4.1.6 - Import Bootstrap
+@import "bootstrap";
+
+// ===== INHERITANCE (SCSS extend) =====
+%button-base {
+  display: inline-block;
+  padding: $spacing-small $base-spacing;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+}
+
+%card-shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+}
+
+// ===== GLOBAL STYLES =====
+body {
+  font-family: $font-family;
+  color: $text-color;
+  background-color: $light-bg;
+  line-height: 1.6;
+}
+
+// ===== NESTING - Navigation =====
+.navbar-custom {
+  background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: $base-spacing 0;
+
+  .navbar-brand {
+    color: white;
+    font-size: $font-size-large;
+    font-weight: bold;
+
+    &:hover {
+      color: lighten($secondary-color, 20%);
+    }
+  }
+
+  .navbar-nav {
+    .nav-link {
+      color: rgba(255,255,255,0.9);
+      margin: 0 $spacing-small;
+
+      &:hover {
+        color: white;
+        background-color: rgba(255,255,255,0.1);
+        border-radius: 4px;
+      }
+
+      &.active {
+        color: white;
+        font-weight: bold;
+      }
+    }
+  }
+
+  // 4.1.7 - Responsive navbar
+  @media (max-width: 768px) {
+    .navbar-nav {
+      margin-top: $base-spacing;
+
+      .nav-link {
+        padding: $spacing-small;
+        margin: $spacing-small / 2 0;
+      }
+    }
+  }
+}
+
+// Cart badge
+.cart-badge {
+  background-color: $accent-color;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
+
+// ===== BREADCRUMBS (4.1.3) =====
+.breadcrumb-custom {
+  background-color: white;
+  padding: $base-spacing;
+  border-radius: 4px;
+  margin-bottom: $spacing-medium;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+
+  .breadcrumb {
+    margin-bottom: 0;
+    background: none;
+
+    .breadcrumb-item {
+      font-size: $font-size-small;
+
+      a {
+        color: $secondary-color;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      &.active {
+        color: $text-color;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// ===== PRODUCT CARDS =====
+.product-card {
+  @extend %card-shadow;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: $spacing-medium;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .product-image {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    background-color: $light-bg;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.05);
+    }
+  }
+
+  .product-badges {
+    position: absolute;
+    top: $spacing-small;
+    right: $spacing-small;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-small / 2;
+
+    .badge {
+      padding: $spacing-small / 2 $spacing-small;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+  }
+
+  .product-info {
+    padding: $base-spacing;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+      font-size: $font-size-base;
+      margin-bottom: $spacing-small;
+      color: $primary-color;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+          color: $secondary-color;
+        }
+      }
+    }
+
+    .product-category {
+      color: #6c757d;
+      font-size: $font-size-small;
+      margin-bottom: $spacing-small;
+    }
+
+    .product-price {
+      font-size: $font-size-large;
+      font-weight: bold;
+      color: $success-color;
+      margin-top: auto;
+    }
+  }
+
+  .product-actions {
+    padding: $base-spacing;
+    border-top: 1px solid $border-color;
+
+    .btn {
+      @extend %button-base;
+      width: 100%;
+    }
+  }
+}
+
+// ===== BUTTONS =====
+.btn-primary-custom {
+  @extend %button-base;
+  background-color: $secondary-color;
+  color: white;
+
+  &:hover {
+    background-color: darken($secondary-color, 10%);
+  }
+}
+
+.btn-success-custom {
+  @extend %button-base;
+  background-color: $success-color;
+  color: white;
+
+  &:hover {
+    background-color: darken($success-color, 10%);
+  }
+}
+
+.btn-danger-custom {
+  @extend %button-base;
+  background-color: $accent-color;
+  color: white;
+
+  &:hover {
+    background-color: darken($accent-color, 10%);
+  }
+}
+
+// ===== CART & CHECKOUT =====
+.cart-page, .checkout-page {
+  background: white;
+  border-radius: 8px;
+  padding: $spacing-large;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+  .cart-table {
+    width: 100%;
+
+    thead {
+      background-color: $light-bg;
+
+      th {
+        padding: $base-spacing;
+        font-weight: 600;
+        border-bottom: 2px solid $border-color;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid $border-color;
+
+        td {
+          padding: $base-spacing;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+
+  .cart-summary {
+    background: $light-bg;
+    padding: $spacing-large;
+    border-radius: 8px;
+    margin-top: $spacing-large;
+
+    h3 {
+      margin-bottom: $base-spacing;
+      color: $primary-color;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      padding: $spacing-small 0;
+
+      &.total {
+        font-size: $font-size-large;
+        font-weight: bold;
+        border-top: 2px solid $border-color;
+        padding-top: $base-spacing;
+        margin-top: $spacing-small;
+      }
+    }
+  }
+}
+
+// ===== ALERTS & FLASH MESSAGES (4.2.3) =====
+.alert-custom {
+  padding: $base-spacing;
+  border-radius: 4px;
+  margin-bottom: $spacing-medium;
+  border-left: 4px solid;
+
+  &.alert-success {
+    background-color: lighten($success-color, 50%);
+    border-color: $success-color;
+    color: darken($success-color, 20%);
+  }
+
+  &.alert-danger {
+    background-color: lighten($accent-color, 40%);
+    border-color: $accent-color;
+    color: darken($accent-color, 20%);
+  }
+
+  &.alert-info {
+    background-color: lighten($secondary-color, 45%);
+    border-color: $secondary-color;
+    color: darken($secondary-color, 20%);
+  }
+}
+
+// ===== FORMS =====
+.form-custom {
+  .form-group {
+    margin-bottom: $spacing-medium;
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: $spacing-small;
+      color: $primary-color;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: $spacing-small;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      font-size: $font-size-base;
+
+      &:focus {
+        outline: none;
+        border-color: $secondary-color;
+        box-shadow: 0 0 0 3px rgba($secondary-color, 0.1);
+      }
+    }
+  }
+}
+
+// ===== RESPONSIVE UTILITIES (4.1.7) =====
+// Mobile optimizations
+@media (max-width: 768px) {
+  .container {
+    padding: $spacing-small;
+  }
+
+  .product-card {
+    .product-image {
+      height: 200px;
+    }
+  }
+
+  .cart-table {
+    font-size: $font-size-small;
+
+    td, th {
+      padding: $spacing-small !important;
+    }
+  }
+
+  // Stack checkout forms on mobile
+  .checkout-container {
+    flex-direction: column;
+  }
+}
+
+// Tablet
+@media (min-width: 769px) and (max-width: 1024px) {
+  .product-card {
+    .product-image {
+      height: 220px;
+    }
+  }
+}
+
+// ===== FOOTER =====
+.footer-custom {
+  background-color: $primary-color;
+  color: white;
+  padding: $spacing-large 0;
+  margin-top: $spacing-large * 2;
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: $spacing-large;
+
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+
+      h4 {
+        margin-bottom: $base-spacing;
+        color: lighten($secondary-color, 20%);
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+
+        li {
+          margin-bottom: $spacing-small;
+
+          a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+
+            &:hover {
+              color: white;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .footer-bottom {
+    text-align: center;
+    margin-top: $spacing-large;
+    padding-top: $spacing-large;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+  }
+}
+
+// ===== LOADING STATES =====
+.spinner {
+  border: 3px solid $light-bg;
+  border-top: 3px solid $secondary-color;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: $spacing-large auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// ===== CUSTOMIZATION SECTION =====
+.customization-section {
+  background: $light-bg;
+  padding: $spacing-large;
+  border-radius: 8px;
+  margin: $spacing-medium 0;
+  border: 2px solid $border-color;
+
+  h3 {
+    color: $primary-color;
+    margin-bottom: $spacing-medium;
+  }
+
+  .custom-option {
+    margin-bottom: $spacing-medium;
+    padding: $base-spacing;
+    background: white;
+    border-radius: 4px;
+
+    label {
+      font-weight: 600;
+      color: $primary-color;
+    }
+  }
+}
+
+// Print styles for invoices
+@media print {
+  .navbar-custom, .footer-custom, .btn {
+    display: none;
+  }
+
+  body {
+    background: white;
+  }
+}

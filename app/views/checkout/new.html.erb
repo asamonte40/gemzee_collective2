@@ -31,6 +31,7 @@
           </div>
         <% end %>
 
+        <%# Submit the form to CheckoutController#create %>
         <%= f.submit 'Continue to Payment', class: 'btn btn-primary' %>
       <% end %>
     <% else %>
@@ -38,10 +39,10 @@
         <p><strong><%= @user.name %></strong></p>
         <p><%= @user.address %></p>
         <p><%= @user.city %>, <%= @user.province.code %> <%= @user.postal_code %></p>
-        <p><p><%= link_to 'Change address', edit_user_registration_path %></p></p>
+        <p><%= link_to 'Change address', edit_user_registration_path %></p>
       </div>
 
-      <%# Continue to payment button outside the form if address is already filled %>
+      <%# Still submit to CheckoutController#create to create the order %>
       <%= form_with url: checkout_path, method: :post, local: true do |f| %>
         <%= f.submit 'Continue to Payment', class: 'btn btn-primary' %>
       <% end %>

@@ -10,6 +10,16 @@ class CheckoutController < ApplicationController
     # Always set a province for calculations
     @province = @user.province || Province.first
     calculate_totals(@province)
+
+    @order = @user.orders.build(
+    status: "new",
+    total_price: @total,
+    shipping_address: @user.address,
+    shipping_city: @user.city,
+    shipping_postal_code: @user.postal_code,
+    shipping_province_name: @user.province&.name,
+    shipping_province_code: @user.province&.code
+  )
   end
 
   def create

@@ -42,11 +42,8 @@ Rails.application.routes.draw do
   get "checkout", to: "checkout#new"
   post "checkout", to: "checkout#create"
 
-
   resources :orders, only: [ :index, :show ]
-
-  get "payment/:id", to: "payments#show", as: "payment"
-  post "payment/:id", to: "payments#create", as: "create_payment"
+  resources :payments, only: [ :show, :create ]
 
   get "search", to: "search#index"
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
