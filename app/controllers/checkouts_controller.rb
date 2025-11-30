@@ -6,7 +6,9 @@ class CheckoutsController < ApplicationController
   before_action :calculate_taxes
 
   def new
+    puts "DEBUG: current_user=#{current_user.inspect}"
     @cart_items = get_cart_items
+    puts "DEBUG: cart_items=#{@cart_items.inspect}"
     redirect_to cart_path, alert: "Your cart is empty" if @cart_items.empty?
 
     @user = current_user
@@ -106,5 +108,9 @@ class CheckoutsController < ApplicationController
   def load_user_and_provinces
     @user = current_user
     @provinces = Province.all
+  end
+
+  def calculate_taxes
+    calculate_totals(@user.province || Province.first)
   end
 end

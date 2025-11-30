@@ -1,4 +1,4 @@
-class AddOrderFieldsForCheckout < ActiveRecord::Migration[8.0]
+class AddOrderFieldsForCheckouts < ActiveRecord::Migration[8.0]
   def change
     add_column :orders, :subtotal, :decimal, precision: 10, scale: 2
     add_column :orders, :gst_amount, :decimal, precision: 10, scale: 2, default: 0
