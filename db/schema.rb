@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_30_002814) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_30_012839) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -87,6 +87,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_002814) do
     t.decimal "price_at_purchase"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "product_name"
+    t.text "product_description"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
@@ -97,6 +99,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_002814) do
     t.decimal "total_price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "subtotal", precision: 10, scale: 2
+    t.decimal "gst_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "pst_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "hst_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "gst_rate", precision: 5, scale: 3, default: "0.0"
+    t.decimal "pst_rate", precision: 5, scale: 3, default: "0.0"
+    t.decimal "hst_rate", precision: 5, scale: 3, default: "0.0"
+    t.string "shipping_address"
+    t.string "shipping_city"
+    t.string "shipping_postal_code"
+    t.string "shipping_province_name"
+    t.string "shipping_province_code"
+    t.string "stripe_payment_id"
+    t.string "stripe_customer_id"
+    t.datetime "paid_at"
   end
 
   create_table "products", force: :cascade do |t|
@@ -107,7 +124,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_002814) do
     t.integer "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "on_sale", default: false
+    t.boolean "is_new", default: true
     t.index ["category_id"], name: "index_products_on_category_id"
+  end
+
+  create_table "provinces", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "code", null: false
+    t.decimal "gst", precision: 5, scale: 2, default: "0.0"
+    t.decimal "pst", precision: 5, scale: 2, default: "0.0"
+    t.decimal "hst", precision: 5, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -122,6 +151,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_002814) do
     t.string "name"
     t.string "role"
     t.string "phone_number"
+    t.integer "province_id"
+    t.string "address"
+    t.string "city"
+    t.string "postal_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
