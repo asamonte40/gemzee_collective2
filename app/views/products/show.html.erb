@@ -5,9 +5,15 @@
 <% end %>
 
 <p><%= @product.description %></p>
-<p><strong>Price:</strong> $<%= @product.price %></p>
+<p><strong>Price:</strong> <%= number_to_currency(@product.price) %></p>
 <p><strong>Category:</strong> <%= @product.category.name %></p>
 
-<%= button_to "Add to Cart", add_to_cart_path(@product), method: :post %>
+<%# 3.1.1 - Add to Cart button %>
+<% if @product.stock_quantity > 0 %>
+  <%= button_to 'Add to Cart', add_to_cart_path(@product), method: :post, class: 'btn btn-primary' %>
+  <p>In Stock: <%= @product.stock_quantity %> available</p>
+<% else %>
+  <p>Out of Stock</p>
+<% end %>
 
 <%= link_to "Back", products_path %>
