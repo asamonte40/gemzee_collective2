@@ -8,4 +8,6 @@
 <p><strong>Price:</strong> $<%= @product.price %></p>
 <p><strong>Category:</strong> <%= @product.category.name %></p>
 
+<%= button_to "Add to Cart", add_to_cart_path(@product), method: :post %>
+
 <%= link_to "Back", products_path %>

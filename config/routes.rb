@@ -1,8 +1,14 @@
 Rails.application.routes.draw do
-  get "search/index"
-  get "categories/show"
-  get "products/index"
-  get "products/show"
+  # get "cart/show"
+  # get "cart/add"
+  # get "cart/update"
+  # get "cart/remove"
+  # get "cart/clear"
+  # get "search/index"
+  # get "categories/show"
+  # get "products/index"
+  # get "products/show"
+  devise_for :users
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
 
@@ -15,14 +21,24 @@ Rails.application.routes.draw do
   root "products#index"
 
   resources :products, only: [ :index, :show ]
-
   resources :categories, only: [ :show ]
 
   get "products/on_sale", to: "products#on_sale"
   get "products/new_products", to: "products#new_products"
   get "products/recently_updated", to: "products#recently_updated"
 
+  get "cart", to: "cart#show"
+  post "cart/add/:id", to: "cart#add", as: "add_to_cart"
+  patch "cart/update/:id", to: "cart#update", as: "update_cart"
+  delete "cart/remove/:id", to: "cart#remove", as: "remove_from_cart"
+  delete "cart/clear", to: "cart#clear", as: "clear_cart"
+
   get "search", to: "search#index"
+
+  resources :orders, only: [ :index, :show ]
+
+  get "payment/:id", to: "payments#show", as: "payment"
+  post "payment/:id", to: "payments#create", as: "create_payment"
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker

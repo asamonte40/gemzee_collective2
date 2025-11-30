@@ -1,0 +1,59 @@
+<h1>Shopping Cart</h1>
+
+<% if @cart_items.empty? %>
+  <p>Your cart is empty</p>
+  <%= link_to 'Continue Shopping', products_path, class: 'btn' %>
+<% else %>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @cart_items.each do |item| %>
+        <tr>
+          <td>
+            <% if item[:product].image.attached? %>
+              <%= image_tag item[:product].image, width: 50 %>
+            <% end %>
+            <%= link_to item[:product].name, product_path(item[:product]) %>
+          </td>
+          <td><%= number_to_currency(item[:product].price) %></td>
+          <td>
+            <%# 3.1.2 - Edit quantity with text field %>
+            <%= form_with url: update_cart_path(item[:product]), method: :patch, local: true do |f| %>
+              <%= f.number_field :quantity, value: item[:quantity], min: 1 %>
+              <%= f.submit 'Update' %>
+            <% end %>
+          </td>
+          <td><%= number_to_currency(item[:product].price * item[:quantity]) %></td>
+          <td>
+            <%# 3.1.2 - Remove item (independent of quantity) %>
+            <%= button_to 'Remove', remove_from_cart_path(item[:product]),
+                          method: :delete,
+                          data: { confirm: 'Remove this item?' } %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <div class="cart-summary">
+    <h3>Subtotal: <%= number_to_currency(@subtotal) %></h3>
+    <p><em>Taxes calculated at checkout</em></p>
+
+    <%= link_to 'Continue Shopping', products_path %>
+
+    <% if user_signed_in? %>
+      <%= link_to 'Proceed to Checkout', new_checkout_path, class: 'btn btn-primary' %>
+    <% else %>
+      <p>Please <%= link_to 'login', new_user_session_path %> or
+         <%= link_to 'sign up', new_user_registration_path %> to checkout</p>
+    <% end %>
+  </div>
+<% end %>
