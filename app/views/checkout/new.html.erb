@@ -25,27 +25,43 @@
           </div>
         <% end %>
 
-        <!-- THIS BUTTON CREATES THE ORDER -->
+        <!-- Creates order -->
         <%= f.submit 'Continue to Payment', class: 'btn btn-primary' %>
       <% end %>
+
     <% else %>
+      <!-- Address is VALID — show summary & Stripe pay button -->
       <div class="address-display">
         <p><strong><%= @user.name %></strong></p>
         <p><%= @user.address %></p>
         <p><%= @user.city %>, <%= @user.province.code %> <%= @user.postal_code %></p>
         <p><%= link_to 'Change address', checkout_path(edit_address: true) %></p>
       </div>
-    <% end %>
-  </div>
 
-  <div class="order-summary">
-    <h2>Order Summary</h2>
-    <% @cart_items.each do |item| %>
-      <div class="summary-item">
-        <span><%= item[:product].name %> × <%= item[:quantity] %></span>
-        <span><%= number_to_currency(item[:product].price * item[:quantity]) %></span>
-      </div>
+      <h2>Order Summary</h2>
+      <% @cart_items.each do |item| %>
+        <div class="summary-item">
+          <span><%= item[:product].name %> × <%= item[:quantity] %></span>
+          <span><%= number_to_currency(item[:product].price * item[:quantity]) %></span>
+        </div>
+      <% end %>
+      <h3>Total: <%= number_to_currency(@total) %></h3>
+
+      <!--  ADD THIS: Pay with Stripe ON checkout page ⭐ -->
+      <h2>Pay with Stripe</h2>
+      <%= link_to "Checkout", checkout_path(@order) %>
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <script
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="<%= ENV['STRIPE_PUBLISHABLE_KEY'] %>"
+          data-amount="<%= (@total * 100).to_i %>"
+          data-name="Gemzee Collective"
+          data-description="Order #<%= @order.id %>"
+          data-currency="cad"
+          data-email="<%= current_user.email %>">
+        </script>
+      </form>
+
     <% end %>
-    <h3>Total: <%= number_to_currency(@total) %></h3>
   </div>
 </div>

@@ -41,13 +41,17 @@ Rails.application.routes.draw do
   delete "cart/remove/:id", to: "cart#remove", as: "remove_from_cart"
   delete "cart/clear", to: "cart#clear", as: "clear_cart"
 
-  get "checkout", to: "checkout#new"
-  post "checkout", to: "checkout#create"
+  get "/checkout", to: "checkout#new", as: :checkout
+  post "/checkout", to: "checkout#create"
+
 
   get "pages/:slug", to: "pages#show", as: :page
 
   resources :orders, only: [ :index, :show ]
-  resources :payments, only: [ :show, :create ]
+
+  resources :orders do
+    resource :payment, only: [ :show, :create ]
+  end
 
   get "search", to: "search#index"
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

@@ -8,10 +8,6 @@
       <p><%= @order.shipping_city %>, <%= @order.shipping_province_code %></p>
     </div>
 
-    <p>Click below to pay with Stripe:</p>
-    <%= button_to "Pay with Stripe", payments_path(@order), method: :post, class: "btn btn-primary" %>
-  </div>
-
   <div class="order-summary">
     <h2>Order Summary</h2>
     <% @order.order_items.each do |item| %>

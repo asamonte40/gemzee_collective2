@@ -47,7 +47,7 @@ class CheckoutController < ApplicationController
 
     @order.calculate_totals(@user.province)
     if @order.order_items.all?(&:valid?) && @order.save
-      redirect_to payment_path(@order)   # ← move to Payment Page
+      redirect_to payment_path(@order.id)
     else
       set_defaults_for_render
       render :new
