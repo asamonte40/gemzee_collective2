@@ -24,28 +24,92 @@
 
   <body>
     <header>
-    <nav>
-    <%= link_to "Home", root_path %> |
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom px-3">
+        <%= link_to "Gemzee Collective", root_path, class: "navbar-brand" %>
 
-    <% Category.all.each do |category| %>
-      <%= link_to category.name, category_path(category) %> |
-    <% end %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <%= link_to "Search", search_path %> |
+        <div class="collapse navbar-collapse" id="navbarMenu">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <% Category.all.each do |category| %>
+              <li class="nav-item">
+                <%= link_to category.name, category_path(category), class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
 
-    <%# 3.1.1 - Cart link with count %>
-    <%= link_to "Cart (#{cart_count})", cart_path %> |
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <%# Cart link with dynamic badge %>
+            <li class="nav-item">
+              <%= link_to cart_path, class: "nav-link" do %>
+                Cart
+                <% if cart_count.to_i > 0 %>
+                  <span class="cart-badge"><%= cart_count %></span>
+                <% end %>
+              <% end %>
+            </li>
 
-    <% if user_signed_in? %>
-      <%= link_to "My Orders", orders_path %> |
-      <%= link_to "Account", edit_user_registration_path %> |
-      <%= button_to "Logout", destroy_user_session_path, method: :delete %>
-    <% else %>
-      <%= link_to "Login", new_user_session_path %> |
-      <%= link_to "Sign Up", new_user_registration_path %>
-    <% end %>
-  </nav>
-  </header>
-    <%= yield %>
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <%= link_to "My Orders", orders_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Account", edit_user_registration_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= button_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link btn btn-link" %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Login", new_user_session_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </nav>
+
+      <%# ===== BREADCRUMBS ===== %>
+      <% if controller_name.in?(%w[products categories pages]) %>
+        <nav aria-label="breadcrumb" class="breadcrumb-custom my-3">
+          <ol class="breadcrumb mb-0">
+            <%= breadcrumbs %>
+          </ol>
+        </nav>
+      <% end %>
+    </header>
+
+    <%# ===== FLASH MESSAGES ===== %>
+    <div class="container mt-3">
+      <% flash.each do |type, message| %>
+        <div class="alert alert-custom <%= "alert-#{type}" %>">
+          <%= message %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ===== MAIN CONTENT ===== %>
+    <main class="container my-4">
+      <%= yield %>
+    </main>
+
+    <%# ===== FOOTER ===== %>
+    <footer class="footer-custom">
+  <div class="footer-content container">
+    <div class="footer-section">
+      <h4>About Us</h4>
+      <ul>
+        <li><%= link_to "About Us", page_path("about") %></li>
+        <li><%= link_to "Contact", page_path("contact") %></li>
+      </ul>
+    </div>
+  <div class="footer-bottom">
+    &copy; <%= Date.today.year %> Gemzee Collective. All Rights Reserved.
+  </div>
+</footer>
   </body>
 </html>

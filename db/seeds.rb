@@ -57,6 +57,28 @@ User.create!(
   )
 end
 
+Page.find_or_create_by!(slug: "about") do |p|
+  p.title = "About Gemzee Collective"
+  p.content = <<~HTML
+    <p>Welcome to <strong>Gemzee Collective</strong>, your destination for curated, high-quality products online.</p>
+    <p>Our mission is to connect you with unique, artisan-crafted items that brighten your day and enrich your lifestyle.</p>
+    <p>From jewelry to home decor, every product is carefully selected for its quality, design, and story.</p>
+  HTML
+end
+
+Page.find_or_create_by!(slug: "contact") do |p|
+  p.title = "Contact Gemzee Collective"
+  p.content = <<~HTML
+    <p>We’d love to hear from you! Please reach out to us with any questions, comments, or feedback.</p>
+    <ul>
+      <li>Email: <a href="">gemzeecollective@gmail.com</a></li>
+      <li>Phone: (204) 555-1234</li>
+      <li>Address: 123 Artisan Lane, Winnipeg, MB</li>
+    </ul>
+    <p>Our team is committed to responding within 24-48 hours during business days.</p>
+  HTML
+end
+
 
 # CSV import
 csv_file_path = Rails.root.join("db/data/cartier_catalog.csv")

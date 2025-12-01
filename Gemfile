@@ -39,6 +39,7 @@ gem "sprockets-rails"
 gem "kaminari"
 gem "stripe", "~> 8.0"
 gem "jquery-rails"
+gem "bootstrap", "~> 5.3"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -73,5 +74,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-
-gem "cssbundling-rails", "~> 1.4"

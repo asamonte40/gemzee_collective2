@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
-  get "orders/index"
-  get "orders/show"
+  # get "pages/about"
+  # get "pages/contact"
+  # get "orders/index"
+  # get "orders/show"
   # get "payments/show"
   # get "payments/create"
   # get "checkout/new"
@@ -41,6 +43,8 @@ Rails.application.routes.draw do
 
   get "checkout", to: "checkout#new"
   post "checkout", to: "checkout#create"
+
+  get "pages/:slug", to: "pages#show", as: :page
 
   resources :orders, only: [ :index, :show ]
   resources :payments, only: [ :show, :create ]
