@@ -40,6 +40,8 @@ gem "kaminari"
 gem "stripe", "~> 8.0"
 gem "jquery-rails"
 gem "bootstrap", "~> 5.3"
+gem "dotenv-rails", groups: [ :development, :test ]
+
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
