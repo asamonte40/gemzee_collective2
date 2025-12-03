@@ -54,9 +54,9 @@ Rails.application.routes.draw do
   post "/checkout/create_payment_intent", to: "checkout#create_payment_intent"
 
   # config/routes.rb
-  post "create_checkout_session", to: "stripe#checkout"
 
-  post "create_checkout_session", to: "payments#create_checkout_session"
+  get "checkout/success", to: "checkout#success", as: :checkout_success
+
   get "success", to: "payments#success"
   get "cancel", to: "payments#cancel"
 
