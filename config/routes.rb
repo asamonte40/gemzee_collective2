@@ -53,6 +53,14 @@ Rails.application.routes.draw do
   get "/checkout/payment/:id", to: "checkout#payment", as: :checkout_payment
   post "/checkout/create_payment_intent", to: "checkout#create_payment_intent"
 
+  # config/routes.rb
+  post "create_checkout_session", to: "stripe#checkout"
+
+  post "create_checkout_session", to: "payments#create_checkout_session"
+  get "success", to: "payments#success"
+  get "cancel", to: "payments#cancel"
+
+
   resources :orders, only: [ :index, :show ] do
     member do
       get "confirmation"

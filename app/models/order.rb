@@ -1,41 +1,36 @@
 class Order < ApplicationRecord
   belongs_to :user
   has_many :order_items, dependent: :destroy
-  has_many :customizations, through: :order_items
+  has_many :products, through: :order_items
 
-  # required fields
-  validates :status, presence: true
-  validates :total_price, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  # Status values
+  STATUSES = %w[pending paid shipped delivered cancelled].freeze
 
-  before_validation :calculate_totals_before_save
+  # Validations
+  validates :status, presence: true, inclusion: { in: STATUSES }
+  validates :total, presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :stripe_payment_id, uniqueness: true, allow_nil: true
 
-  # calculate totals before order is saved
-  def calculate_totals_before_save
-    return if order_items.empty? || user.blank? || user.province.blank?
-    calculate_totals(user.province)
-  end
+  # Callbacks
+  before_validation :calculate_totals, if: -> { order_items.any? && user&.province.present? }
 
-  # central tax and total calculation
-  def calculate_totals(province)
-    # bubtotal
-    self.subtotal = order_items.sum(&:line_total)
+  # Calculate subtotal, taxes, and total
+  def calculate_totals
+    self.subtotal = order_items.sum { |item| item.price_at_purchase * item.quantity }
 
-    # save the tax rates at time of purchase
-    self.gst_rate = province.gst
-    self.pst_rate = province.pst
-    self.hst_rate = province.hst
+    self.gst_rate = user.province.gst
+    self.pst_rate = user.province.pst
+    self.hst_rate = user.province.hst
 
-    # tax amounts
     self.gst_amount = subtotal * (gst_rate / 100.0)
     self.pst_amount = subtotal * (pst_rate / 100.0)
     self.hst_amount = subtotal * (hst_rate / 100.0)
 
-    # final total
-    self.total_price = subtotal + gst_amount + pst_amount + hst_amount
+    self.total = subtotal + gst_amount + pst_amount + hst_amount
   end
 
-  # stripe: mark paid
-  def mark_as_paid!(stripe_payment_id, stripe_customer_id)
+  # Stripe: mark paid
+  def mark_as_paid!(stripe_payment_id:, stripe_customer_id:)
     update!(
       status: "paid",
       stripe_payment_id: stripe_payment_id,
@@ -44,16 +39,22 @@ class Order < ApplicationRecord
     )
   end
 
+  # Mark shipped
   def mark_as_shipped!
     update!(status: "shipped")
   end
 
-  # activeadmin searchable fields
+  # Helper methods
+  STATUSES.each do |s|
+    define_method("#{s}?") { status == s }
+  end
+
+  # ActiveAdmin / Ransack search
   def self.ransackable_associations(_auth = nil)
-    %w[order_items user]
+    %w[order_items user products]
   end
 
   def self.ransackable_attributes(_auth = nil)
-    %w[id status subtotal gst_amount pst_amount hst_amount total_price created_at paid_at]
+    %w[id status subtotal gst_amount pst_amount hst_amount total created_at paid_at stripe_payment_id]
   end
 end

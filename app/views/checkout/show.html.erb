@@ -1,16 +1,17 @@
-<div class="container mt-4 mb-5">
-  <!-- Page Heading -->
+<!-- Page Heading -->
   <div class="text-center py-4 mb-4 border-bottom">
     <h1 class="display-4">Checkout</h1>
   </div>
 
   <!-- Flash Alert -->
   <% if flash[:alert] %>
+  <div class="container mt-4 mb-5">
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
       <%= flash[:alert] %>
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-  <% end %>
+  </div>
+<% end %>
 
   <!-- Order Errors -->
   <% if @order&.errors&.any? %>
@@ -118,36 +119,11 @@
         <!-- Payment Info -->
         <div class="card mb-4">
           <div class="card-header bg-white">
-            <h3 class="h5 mb-0">💳 Payment Information</h3>
+            <h3 class="h5 mb-0">💳 Payment</h3>
           </div>
-          <div class="card-body">
-            <div class="alert alert-success">
-              <strong>Secure Payment</strong>
-              <p class="mb-0 small">Your payment information is encrypted and secure</p>
-            </div>
-
-            <div class="mb-3">
-              <%= label_tag :cardholder_name, "Cardholder Name", class: 'form-label' %>
-              <%= text_field_tag :cardholder_name, '', required: true, class: 'form-control', placeholder: 'Name on card', autocomplete: 'cc-name' %>
-            </div>
-
-            <div class="mb-3">
-              <%= label_tag :card_number, "Card Number", class: 'form-label' %>
-              <div id="card-number-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
-            </div>
-
-            <div class="row g-3 mb-3">
-              <div class="col-md-6">
-                <%= label_tag :card_expiry, "Expiry Date", class: 'form-label' %>
-                <div id="card-expiry-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
-              </div>
-              <div class="col-md-6">
-                <%= label_tag :card_cvc, "CVC", class: 'form-label' %>
-                <div id="card-cvc-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
-              </div>
-            </div>
-
-            <div id="card-errors" role="alert" class="text-danger small"></div>
+          <div class="card-body text-center">
+            <p class="mb-3">You will be redirected to Stripe to complete your secure payment.</p>
+            <p class="text-muted small">Powered by Stripe - Secure payment processing</p>
           </div>
         </div>
 
@@ -156,9 +132,7 @@
           <%= link_to 'Return to Cart', cart_path, class: 'btn btn-outline-primary btn-lg' %>
           <%= f.submit 'Place Order', class: 'btn btn-success btn-lg px-5', id: 'submit-button', data: { disable_with: 'Processing Payment...' } %>
         </div>
-
-        <%= hidden_field_tag :stripe_payment_method_id, '', id: 'stripe-payment-method-id' %>
-      <% end %>
+        <% end %>
     </div>
 
     <!-- Order Summary Sidebar -->
@@ -221,87 +195,3 @@
     </div>
   </div>
 </div>
-
-<script src="https://js.stripe.com/v3/"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Stripe Initialization
-  const stripeKey = '<%= Rails.configuration.stripe[:publishable_key] %>';
-  if (!stripeKey) { console.error('Stripe publishable key not found!'); return; }
-
-  const stripe = Stripe(stripeKey);
-  const elements = stripe.elements();
-  const cardNumber = elements.create('cardNumber', { style: { base: { fontSize: '16px', color: '#212529', '::placeholder': { color: '#6c757d' } }, invalid: { color: '#dc3545' } } });
-  const cardExpiry = elements.create('cardExpiry', { style: { base: { fontSize: '16px', color: '#212529' }, invalid: { color: '#dc3545' } } });
-  const cardCvc = elements.create('cardCvc', { style: { base: { fontSize: '16px', color: '#212529' }, invalid: { color: '#dc3545' } } });
-
-  cardNumber.mount('#card-number-element');
-  cardExpiry.mount('#card-expiry-element');
-  cardCvc.mount('#card-cvc-element');
-
-  const displayError = document.getElementById('card-errors');
-  [cardNumber, cardExpiry, cardCvc].forEach(el => {
-    el.on('change', event => { displayError.textContent = event.error ? event.error.message : ''; });
-  });
-
-  // Form submission
-  const form = document.getElementById('checkout-form');
-  const submitBtn = document.getElementById('submit-button');
-
-  form.addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    console.log('Form submission started');
-
-    submitBtn.disabled = true;
-    submitBtn.value = 'Processing Payment...';
-
-    const cardholderName = document.getElementById('cardholder_name').value.trim();
-    if (!cardholderName) {
-      displayError.textContent = 'Please enter the cardholder name';
-      submitBtn.disabled = false;
-      submitBtn.value = 'Place Order';
-      return;
-    }
-
-    console.log('Creating payment method...');
-
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: cardNumber,
-      billing_details: { name: cardholderName }
-    });
-
-    if (error) {
-      console.error('Stripe error:', error);
-      displayError.textContent = error.message;
-      submitBtn.disabled = false;
-      submitBtn.value = 'Place Order';
-    } else {
-      console.log('Payment method created:', paymentMethod.id);
-      document.getElementById('stripe-payment-method-id').value = paymentMethod.id;
-
-      console.log('Submitting form to server...');
-      form.submit();
-    }
-  });
-
-  // Saved Address Toggle
-  const radios = document.querySelectorAll('input[name="use_saved_address"]');
-  const newAddressFields = document.getElementById('new-address-fields');
-  if (radios.length && newAddressFields) {
-    radios.forEach(radio => {
-      radio.addEventListener('change', function() {
-        if (this.value === '0') {
-          newAddressFields.style.display = 'block';
-          newAddressFields.querySelectorAll('input[required], select[required]').forEach(f => f.required = true);
-        } else {
-          newAddressFields.style.display = 'none';
-          newAddressFields.querySelectorAll('input, select').forEach(f => f.required = false);
-        }
-      });
-    });
-  }
-});
-</script>
