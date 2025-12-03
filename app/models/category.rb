@@ -1,5 +1,6 @@
 class Category < ApplicationRecord
-  has_many :products, dependent: :nullify
+  has_many :products_categories, dependent: :destroy
+  has_many :products, through: :products_categories
 
   # Allow Ransack to search/filter on this association
   def self.ransackable_associations(auth_object = nil)

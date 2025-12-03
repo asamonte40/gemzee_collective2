@@ -1,6 +1,11 @@
 class Product < ApplicationRecord
-  belongs_to :category, optional: true
+  # belongs_to :category, optional: true
   has_many :order_items
+  has_many :products_categories, dependent: :destroy
+  has_many :categories, through: :products_categories
+
+  has_many :products_tags, dependent: :destroy
+  has_many :tags, through: :products_tags
 
   # ActiveStorage attachments
   has_one_attached :image
@@ -19,6 +24,18 @@ class Product < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[category]
+    %w[categories tags]
+  end
+
+  def thumbnail
+    image.variant(resize_to_limit: [ 150, 150 ])
+  end
+
+  def medium
+    image.variant(resize_to_limit: [ 600, 600 ])
+  end
+
+  def large
+    image.variant(resize_to_limit: [ 1200, 1200 ])
   end
 end

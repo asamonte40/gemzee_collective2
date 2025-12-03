@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_03_144642) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_03_155250) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -133,13 +133,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_144642) do
     t.text "description"
     t.decimal "price", precision: 10, scale: 2
     t.integer "stock_quantity"
-    t.integer "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "on_sale", default: false
     t.boolean "is_new", default: true
     t.decimal "sale_price"
-    t.index ["category_id"], name: "index_products_on_category_id"
   end
 
   create_table "products_categories", force: :cascade do |t|
@@ -151,12 +149,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_144642) do
     t.index ["product_id"], name: "index_products_categories_on_product_id"
   end
 
+  create_table "products_tags", force: :cascade do |t|
+    t.integer "product_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_products_tags_on_product_id"
+    t.index ["tag_id"], name: "index_products_tags_on_tag_id"
+  end
+
   create_table "provinces", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.decimal "gst", precision: 5, scale: 2, default: "0.0"
     t.decimal "pst", precision: 5, scale: 2, default: "0.0"
     t.decimal "hst", precision: 5, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -187,7 +200,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_144642) do
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "orders", "users"
-  add_foreign_key "products", "categories"
   add_foreign_key "products_categories", "categories"
   add_foreign_key "products_categories", "products"
+  add_foreign_key "products_tags", "products"
+  add_foreign_key "products_tags", "tags"
 end

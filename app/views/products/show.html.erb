@@ -30,7 +30,14 @@
 
           <p class="product-description text-muted mb-3"><%= @product.description %></p>
 
-          <p class="mb-3"><strong>Category:</strong> <%= @product.category.name %></p>
+          <p class="mb-3">
+            <strong>Categories:</strong>
+            <% if @product.categories.any? %>
+              <%= @product.categories.map(&:name).join(", ") %>
+            <% else %>
+              No category
+            <% end %>
+          </p>
 
           <% if @product.stock_quantity > 0 %>
             <p class="in-stock text-success mb-3">In Stock: <%= @product.stock_quantity %></p>
