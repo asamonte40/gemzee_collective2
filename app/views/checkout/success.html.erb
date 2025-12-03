@@ -1,0 +1,9 @@
+<h1>Payment Successful!</h1>
+<p>Thank you, <%= @order.user.name %>. Your order #<%= @order.id %> has been placed.</p>
+
+<h2>Order Summary</h2>
+<% @order.order_items.each do |item| %>
+  <p><%= item.product_name %> × <%= item.quantity %> — <%= number_to_currency(item.price_at_purchase) %></p>
+<% end %>
+<h3>Total Paid: <%= number_to_currency(@order.total_price) %></h3>
+<%= link_to "Back to Shop", root_path, class: "btn btn-primary" %>

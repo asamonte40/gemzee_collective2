@@ -12,14 +12,19 @@ class CartController < ApplicationController
 
   def add
     product = Product.find(params[:id])
+    product_id = product.id.to_s
 
-    if @cart[product.id.to_s]
-      @cart[product.id.to_s] += 1
+    quantity = params[:quantity].to_i
+    quantity = 1 if quantity < 1
+
+    if @cart[product_id]
+      @cart[product_id] += quantity
     else
-      @cart[product.id.to_s] = 1
+      @cart[product_id] = quantity
     end
+
     session[:cart] = @cart
-    redirect_to cart_path, notice: "#{product.name} added to cart"
+    redirect_to cart_path, notice: "#{product.name} added to cart (#{quantity})"
   end
 
   def update
@@ -50,7 +55,7 @@ class CartController < ApplicationController
   private
 
   def initialize_cart
-    session[:cart] ||= {}  # creates the empty cart if none exists
-    @cart = session[:cart] # loads it into @cart
+    session[:cart] ||= {}
+    @cart = session[:cart]
   end
 end

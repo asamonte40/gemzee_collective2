@@ -43,7 +43,8 @@ Rails.application.routes.draw do
 
   get "/checkout", to: "checkout#new", as: :checkout
   post "/checkout", to: "checkout#create"
-
+  post "/checkout/create_payment_intent", to: "checkout#create_payment_intent"
+  get "/checkout/success", to: "checkout#success", as: :checkout_success
 
   get "pages/:slug", to: "pages#show", as: :page
 

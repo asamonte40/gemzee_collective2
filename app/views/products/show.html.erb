@@ -1,19 +1,60 @@
-<h1><%= @product.name %></h1>
+<div class="product-page">
 
-<% if @product.image.attached? %>
-  <%= image_tag @product.image, width: 400 %>
-<% end %>
+  <!-- MAIN PRODUCT SECTION -->
+  <div class="product-main">
 
-<p><%= @product.description %></p>
-<p><strong>Price:</strong> <%= number_to_currency(@product.price) %></p>
-<p><strong>Category:</strong> <%= @product.category.name %></p>
+    <!-- LEFT: IMAGE -->
+    <div class="product-image-container">
+      <% if @product.image.attached? %>
+        <%= image_tag @product.image, class: "product-image" %>
+      <% else %>
+        <p>No Image Available</p>
+      <% end %>
+    </div>
 
-<%# 3.1.1 - Add to Cart button %>
-<% if @product.stock_quantity > 0 %>
-  <%= button_to 'Add to Cart', add_to_cart_path(@product), method: :post, class: 'btn btn-primary' %>
-  <p>In Stock: <%= @product.stock_quantity %> available</p>
-<% else %>
-  <p>Out of Stock</p>
-<% end %>
+    <!-- RIGHT: DETAILS -->
+    <div class="product-details">
+      <h1><%= @product.name %></h1>
 
-<%= link_to "Back", products_path %>
+      <p class="product-price"><%= number_to_currency(@product.price) %></p>
+
+      <p class="product-description"><%= @product.description %></p>
+
+      <p><strong>Category:</strong> <%= @product.category.name %></p>
+
+      <% if @product.stock_quantity > 0 %>
+        <p class="in-stock">In Stock: <%= @product.stock_quantity %></p>
+
+        <!-- ADD TO CART FORM (with quantity) -->
+        <%= form_with url: add_to_cart_path(@product), method: :post, local: true do %>
+          <div class="quantity-field">
+            <label>Quantity:</label>
+            <%= number_field_tag :quantity, 1, min: 1, max: @product.stock_quantity, class: "quantity-input" %>
+          </div>
+
+          <%= submit_tag "Add to Cart", class: "add-to-cart-btn" %>
+        <% end %>
+      <% else %>
+        <p class="out-of-stock">Out of Stock</p>
+      <% end %>
+
+      <%= link_to "Back", products_path, class: "back-link" %>
+    </div>
+  </div>
+
+  <!-- SIMILAR PRODUCTS -->
+  <h2 class="similar-title">You May Also Like</h2>
+
+  <div class="similar-products">
+    <% @similar_products&.first(3)&.each do |p| %>
+      <div class="similar-card">
+        <%= link_to product_path(p) do %>
+          <%= image_tag p.image, class: "similar-image" if p.image.attached? %>
+          <p class="similar-name"><%= p.name %></p>
+          <p class="similar-price"><%= number_to_currency(p.price) %></p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+</div>

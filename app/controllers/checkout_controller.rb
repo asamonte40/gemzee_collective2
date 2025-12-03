@@ -8,11 +8,15 @@ class CheckoutController < ApplicationController
     redirect_to cart_path, alert: "Your cart is empty" if @cart_items.empty?
     @province = @user.province || Province.first
     calculate_totals(@province)
-    @order = @user.orders.build(status: "new", total_price: @total,
-      shipping_address: @user.address, shipping_city: @user.city,
+    @order = @user.orders.build(
+      status: "new",
+      total_price: @total,
+      shipping_address: @user.address,
+      shipping_city: @user.city,
       shipping_postal_code: @user.postal_code,
       shipping_province_name: @user.province&.name,
-      shipping_province_code: @user.province&.code)
+      shipping_province_code: @user.province&.code
+    )
   end
 
   def create
@@ -54,6 +58,22 @@ class CheckoutController < ApplicationController
     end
   end
 
+  def create_payment_intent
+    @order = Order.find(params[:order_id])
+    intent = Stripe::PaymentIntent.create(
+      amount: (@order.total_price * 100).to_i, # cents
+      currency: "cad",
+      metadata: { order_id: @order.id }
+    )
+    render json: { client_secret: intent.client_secret }
+  end
+
+  # Success page after payment
+  def success
+    session[:cart] = {}
+    @order = current_user.orders.last
+  end
+
   private
   def user_params
     params.require(:user).permit(:address, :city, :postal_code, :province_id)
@@ -62,6 +82,7 @@ class CheckoutController < ApplicationController
   def initialize_cart; session[:cart] ||= {}; end
   def load_cart_items; @cart_items = get_cart_items; end
   def load_user_and_provinces; @user = current_user; @provinces = Province.all; end
+
   def get_cart_items
     (session[:cart] || {}).map do |pid, qty|
       product = Product.find_by(id: pid)
