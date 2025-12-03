@@ -10,4 +10,8 @@ class OrdersController < ApplicationController
       redirect_to root_path, alert: "Unauthorized"
       end
   end
+
+  def confirmation
+    @order = current_user.orders.find(params[:id])
+  end
 end

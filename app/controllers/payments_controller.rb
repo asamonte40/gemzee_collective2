@@ -3,7 +3,7 @@ class PaymentsController < ApplicationController
   before_action :set_order
 
   def show
-    authorize_order!
+    @order = current_user.orders.find(params[:id])
   end
 
   def create

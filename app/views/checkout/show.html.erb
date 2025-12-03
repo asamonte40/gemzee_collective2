@@ -1,0 +1,307 @@
+<div class="container mt-4 mb-5">
+  <!-- Page Heading -->
+  <div class="text-center py-4 mb-4 border-bottom">
+    <h1 class="display-4">Checkout</h1>
+  </div>
+
+  <!-- Flash Alert -->
+  <% if flash[:alert] %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= flash[:alert] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% end %>
+
+  <!-- Order Errors -->
+  <% if @order&.errors&.any? %>
+    <div class="alert alert-danger">
+      <h5 class="alert-heading"><%= pluralize(@order.errors.count, "error") %> prevented this order from being saved:</h5>
+      <ul class="mb-0">
+        <% @order.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <!-- Checkout Form -->
+    <div class="col-lg-8 mb-4">
+      <%= form_with url: checkout_path, method: :post, local: true, id: 'checkout-form' do |f| %>
+
+        <!-- Customer Info -->
+        <div class="card mb-4">
+          <div class="card-header bg-white">
+            <h3 class="h5 mb-0">Contact Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-success mb-0">
+              <strong>Logged in as:</strong> <%= @user.email %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="card mb-4">
+          <div class="card-header bg-white">
+            <h3 class="h5 mb-0">Shipping Address</h3>
+          </div>
+          <div class="card-body">
+            <% if @user.address.present? %>
+              <div class="mb-3">
+                <div class="form-check border rounded p-3 mb-2">
+                  <%= radio_button_tag :use_saved_address, '1', true, class: 'form-check-input', id: 'use_saved_yes' %>
+                  <label class="form-check-label w-100" for="use_saved_yes">
+                    <strong class="d-block mb-2">Use saved address</strong>
+                    <div class="bg-light p-3 rounded">
+                      <p class="mb-1"><%= @user.name %></p>
+                      <p class="mb-1"><%= @user.address %></p>
+                      <p class="mb-1"><%= @user.city %>, <%= @user.province&.code %> <%= @user.postal_code %></p>
+                      <% if @user.phone_number.present? %>
+                        <p class="mb-0"><%= @user.phone_number %></p>
+                      <% end %>
+                    </div>
+                  </label>
+                </div>
+
+                <div class="form-check border rounded p-3">
+                  <%= radio_button_tag :use_saved_address, '0', false, class: 'form-check-input', id: 'use_saved_no' %>
+                  <label class="form-check-label" for="use_saved_no">
+                    <strong>Use a different address</strong>
+                  </label>
+                </div>
+              </div>
+
+              <div id="new-address-fields" style="display: none;">
+            <% else %>
+              <div id="new-address-fields">
+            <% end %>
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <%= label_tag :name, "Full Name", class: 'form-label' %>
+                    <%= text_field_tag :name, @user.name, required: !@user.address.present?, class: 'form-control' %>
+                  </div>
+                  <div class="col-md-6">
+                    <%= label_tag :phone_number, "Phone Number (Optional)", class: 'form-label' %>
+                    <%= telephone_field_tag :phone_number, @user.phone_number, class: 'form-control', placeholder: '(123) 456-7890' %>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <%= label_tag :address, "Address", class: 'form-label' %>
+                  <%= text_field_tag :address, @user.address, required: !@user.address.present?, class: 'form-control' %>
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <%= label_tag :city, "City", class: 'form-label' %>
+                    <%= text_field_tag :city, @user.city, required: !@user.address.present?, class: 'form-control' %>
+                  </div>
+                  <div class="col-md-6">
+                    <%= label_tag :province_id, "Province", class: 'form-label' %>
+                    <%= select_tag :province_id,
+                        options_from_collection_for_select(Province.all.order(:name), :id, :name, @user.province_id),
+                        prompt: 'Select Province',
+                        required: !@user.address.present?,
+                        class: 'form-select' %>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <%= label_tag :postal_code, "Postal Code", class: 'form-label' %>
+                  <%= text_field_tag :postal_code, @user.postal_code, required: !@user.address.present?, class: 'form-control' %>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="card mb-4">
+          <div class="card-header bg-white">
+            <h3 class="h5 mb-0">💳 Payment Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-success">
+              <strong>Secure Payment</strong>
+              <p class="mb-0 small">Your payment information is encrypted and secure</p>
+            </div>
+
+            <div class="mb-3">
+              <%= label_tag :cardholder_name, "Cardholder Name", class: 'form-label' %>
+              <%= text_field_tag :cardholder_name, '', required: true, class: 'form-control', placeholder: 'Name on card', autocomplete: 'cc-name' %>
+            </div>
+
+            <div class="mb-3">
+              <%= label_tag :card_number, "Card Number", class: 'form-label' %>
+              <div id="card-number-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <%= label_tag :card_expiry, "Expiry Date", class: 'form-label' %>
+                <div id="card-expiry-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+              </div>
+              <div class="col-md-6">
+                <%= label_tag :card_cvc, "CVC", class: 'form-label' %>
+                <div id="card-cvc-element" class="form-control" style="height: 40px; padding-top: 10px;"></div>
+              </div>
+            </div>
+
+            <div id="card-errors" role="alert" class="text-danger small"></div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex justify-content-between">
+          <%= link_to 'Return to Cart', cart_path, class: 'btn btn-outline-primary btn-lg' %>
+          <%= f.submit 'Place Order', class: 'btn btn-success btn-lg px-5', id: 'submit-button', data: { disable_with: 'Processing Payment...' } %>
+        </div>
+
+        <%= hidden_field_tag :stripe_payment_method_id, '', id: 'stripe-payment-method-id' %>
+      <% end %>
+    </div>
+
+    <!-- Order Summary Sidebar -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm sticky-top" style="top: 20px;">
+        <div class="card-header bg-white">
+          <h3 class="h5 mb-0">Order Summary</h3>
+        </div>
+        <div class="card-body">
+          <!-- Cart Items -->
+          <div class="mb-3">
+            <% @cart_items.each do |item| %>
+              <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1"><%= item[:product].name %></h6>
+                  <small class="text-muted">Qty: <%= item[:quantity] %></small>
+                </div>
+                <div class="text-end">
+                  <strong><%= number_to_currency(item[:product].price * item[:quantity]) %></strong>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Totals -->
+          <div class="border-top pt-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal:</span>
+              <strong><%= number_to_currency(@subtotal) %></strong>
+            </div>
+
+            <% if @gst > 0 %>
+              <div class="d-flex justify-content-between mb-2">
+                <span>GST (<%= (@user.province.gst rescue 0) %>%):</span>
+                <strong><%= number_to_currency(@gst) %></strong>
+              </div>
+            <% end %>
+
+            <% if @pst > 0 %>
+              <div class="d-flex justify-content-between mb-2">
+                <span>PST (<%= (@user.province.pst rescue 0) %>%):</span>
+                <strong><%= number_to_currency(@pst) %></strong>
+              </div>
+            <% end %>
+
+            <% if @hst > 0 %>
+              <div class="d-flex justify-content-between mb-2">
+                <span>HST (<%= (@user.province.hst rescue 0) %>%):</span>
+                <strong><%= number_to_currency(@hst) %></strong>
+              </div>
+            <% end %>
+
+            <div class="d-flex justify-content-between pt-3 border-top mt-3">
+              <strong class="fs-5">Total:</strong>
+              <strong class="fs-5 text-success"><%= number_to_currency(@total) %></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Stripe Initialization
+  const stripeKey = '<%= Rails.configuration.stripe[:publishable_key] %>';
+  if (!stripeKey) { console.error('Stripe publishable key not found!'); return; }
+
+  const stripe = Stripe(stripeKey);
+  const elements = stripe.elements();
+  const cardNumber = elements.create('cardNumber', { style: { base: { fontSize: '16px', color: '#212529', '::placeholder': { color: '#6c757d' } }, invalid: { color: '#dc3545' } } });
+  const cardExpiry = elements.create('cardExpiry', { style: { base: { fontSize: '16px', color: '#212529' }, invalid: { color: '#dc3545' } } });
+  const cardCvc = elements.create('cardCvc', { style: { base: { fontSize: '16px', color: '#212529' }, invalid: { color: '#dc3545' } } });
+
+  cardNumber.mount('#card-number-element');
+  cardExpiry.mount('#card-expiry-element');
+  cardCvc.mount('#card-cvc-element');
+
+  const displayError = document.getElementById('card-errors');
+  [cardNumber, cardExpiry, cardCvc].forEach(el => {
+    el.on('change', event => { displayError.textContent = event.error ? event.error.message : ''; });
+  });
+
+  // Form submission
+  const form = document.getElementById('checkout-form');
+  const submitBtn = document.getElementById('submit-button');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    console.log('Form submission started');
+
+    submitBtn.disabled = true;
+    submitBtn.value = 'Processing Payment...';
+
+    const cardholderName = document.getElementById('cardholder_name').value.trim();
+    if (!cardholderName) {
+      displayError.textContent = 'Please enter the cardholder name';
+      submitBtn.disabled = false;
+      submitBtn.value = 'Place Order';
+      return;
+    }
+
+    console.log('Creating payment method...');
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: cardNumber,
+      billing_details: { name: cardholderName }
+    });
+
+    if (error) {
+      console.error('Stripe error:', error);
+      displayError.textContent = error.message;
+      submitBtn.disabled = false;
+      submitBtn.value = 'Place Order';
+    } else {
+      console.log('Payment method created:', paymentMethod.id);
+      document.getElementById('stripe-payment-method-id').value = paymentMethod.id;
+
+      console.log('Submitting form to server...');
+      form.submit();
+    }
+  });
+
+  // Saved Address Toggle
+  const radios = document.querySelectorAll('input[name="use_saved_address"]');
+  const newAddressFields = document.getElementById('new-address-fields');
+  if (radios.length && newAddressFields) {
+    radios.forEach(radio => {
+      radio.addEventListener('change', function() {
+        if (this.value === '0') {
+          newAddressFields.style.display = 'block';
+          newAddressFields.querySelectorAll('input[required], select[required]').forEach(f => f.required = true);
+        } else {
+          newAddressFields.style.display = 'none';
+          newAddressFields.querySelectorAll('input, select').forEach(f => f.required = false);
+        }
+      });
+    });
+  }
+});
+</script>

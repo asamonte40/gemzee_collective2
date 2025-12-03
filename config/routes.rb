@@ -26,34 +26,47 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Root path
   root "products#index"
 
-  resources :products, only: [ :index, :show ]
+  # Products and categories
+  resources :products, only: [ :index, :show ] do
+    collection do
+      get "on_sale"
+      get "new_products"
+      get "recently_updated"
+    end
+  end
   resources :categories, only: [ :show ]
 
-  get "products/on_sale", to: "products#on_sale"
-  get "products/new_products", to: "products#new_products"
-  get "products/recently_updated", to: "products#recently_updated"
-
+  # Cart
   get "cart", to: "cart#show"
   post "cart/add/:id", to: "cart#add", as: "add_to_cart"
   patch "cart/update/:id", to: "cart#update", as: "update_cart"
   delete "cart/remove/:id", to: "cart#remove", as: "remove_from_cart"
   delete "cart/clear", to: "cart#clear", as: "clear_cart"
 
-  get "/checkout", to: "checkout#new", as: :checkout
-  post "/checkout", to: "checkout#create"
+  # Checkout
+  get "/checkout", to: "checkout#show", as: :checkout  # for /checkout page without ID
+  post "/checkout", to: "checkout#create"              # form submission
+  # get "/checkout/success", to: "checkout#success", as: :checkout_success
+  get "/checkout/payment/:id", to: "checkout#payment", as: :checkout_payment
   post "/checkout/create_payment_intent", to: "checkout#create_payment_intent"
-  get "/checkout/success", to: "checkout#success", as: :checkout_success
 
-  get "pages/:slug", to: "pages#show", as: :page
-
-  resources :orders, only: [ :index, :show ]
-
-  resources :orders do
-    resource :payment, only: [ :show, :create ]
+  resources :orders, only: [ :index, :show ] do
+    member do
+      get "confirmation"
+    end
   end
 
+  # Pages
+  get "pages/:slug", to: "pages#show", as: :page
+
+  # Orders and payments
+  resource :payment, only: [ :show, :create ]
+
+
+  # Search
   get "search", to: "search#index"
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

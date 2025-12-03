@@ -1,0 +1,79 @@
+<div class="container my-5">
+  <!-- Success Message -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm" style="background-color: #e8f5e9;">
+        <div class="card-body text-center py-5">
+          <div class="mb-4">
+            <div class="rounded-circle bg-white d-inline-flex align-items-center justify-content-center shadow"
+                 style="width: 100px; height: 100px; font-size: 4rem; color: #27ae60;">
+              ✓
+            </div>
+          </div>
+          <h1 class="display-5 fw-bold mb-3" style="color: #27ae60;">Order Placed Successfully!</h1>
+          <p class="text-secondary fs-5 mb-0">Order #<%= @order.id %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Details -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-4">Order Details</h2>
+
+          <!-- Shipping Address -->
+          <div class="mb-4 pb-4 border-bottom">
+            <h3 class="h5 mb-3" style="color: #2c3e50;">Shipping Address</h3>
+            <p class="mb-1"><%= @order.shipping_address %></p>
+            <p class="mb-0"><%= @order.shipping_city %>, <%= @order.shipping_province_name %> <%= @order.shipping_postal_code %></p>
+          </div>
+
+          <!-- Order Items -->
+          <div class="mb-4 pb-4 border-bottom">
+            <h3 class="h5 mb-3" style="color: #2c3e50;">Order Items</h3>
+            <% @order.order_items.each do |item| %>
+              <div class="d-flex justify-content-between py-2">
+                <span><%= item.product_name %> (x<%= item.quantity %>)</span>
+                <span><%= number_to_currency(item.price_at_purchase * item.quantity) %></span>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="mb-4">
+            <h3 class="h5 mb-3" style="color: #2c3e50;">Order Summary</h3>
+            <div class="d-flex justify-content-between py-2">
+              <span>Subtotal:</span>
+              <span><%= number_to_currency(@order.subtotal) %></span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+              <span>GST:</span>
+              <span><%= number_to_currency(@order.gst) %></span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+              <span>PST:</span>
+              <span><%= number_to_currency(@order.pst) %></span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+              <span>HST:</span>
+              <span><%= number_to_currency(@order.hst) %></span>
+            </div>
+            <div class="d-flex justify-content-between py-3 border-top mt-2" style="border-top: 2px solid #2c3e50 !important;">
+              <strong class="fs-5">Total:</strong>
+              <strong class="fs-5"><%= number_to_currency(@order.total) %></strong>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="d-flex gap-3 mt-4">
+            <%= link_to 'View Order Details', order_path(@order), class: 'btn btn-primary flex-fill py-3 fw-semibold' %>
+            <%= link_to 'Continue Shopping', root_path, class: 'btn btn-outline-secondary flex-fill py-3 fw-semibold' %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
