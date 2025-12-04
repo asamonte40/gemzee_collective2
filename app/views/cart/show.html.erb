@@ -19,13 +19,13 @@
         <tr>
           <td>
             <% if item[:product].image.attached? %>
-              <%= image_tag item[:product].image, width: 50 %>
+              <%= image_tag item[:product].image, width: 50, alt: "product.name" %>
             <% end %>
             <%= link_to item[:product].name, product_path(item[:product]) %>
           </td>
           <td><%= number_to_currency(item[:product].price) %></td>
           <td>
-            <%# 3.1.2 - Edit quantity with text field %>
+            <%# edit quantity with text field %>
             <%= form_with url: update_cart_path(item[:product]), method: :patch, local: true do |f| %>
               <%= f.number_field :quantity, value: item[:quantity], min: 1 %>
               <%= f.submit 'Update' %>
@@ -33,7 +33,7 @@
           </td>
           <td><%= number_to_currency(item[:product].price * item[:quantity]) %></td>
           <td>
-            <%# 3.1.2 - Remove item (independent of quantity) %>
+            <%# remove item (independent of quantity) %>
             <%= button_to 'Remove', remove_from_cart_path(item[:product]),
                           method: :delete,
                           data: { confirm: 'Remove this item?' } %>

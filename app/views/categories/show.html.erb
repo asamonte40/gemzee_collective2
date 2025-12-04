@@ -1,9 +1,7 @@
 <div class="products-page container my-4">
 
-  <!-- Page Heading -->
   <h1 class="mb-3"><%= @category.name %></h1>
 
-  <!-- Products Grid -->
   <div class="products-grid">
     <% @products.each do |product| %>
       <div class="product-card">
@@ -11,7 +9,7 @@
         <%= link_to product_path(product) do %>
 
           <% if product.image.attached? %>
-            <%= image_tag product.image, class: "product-image" %>
+            <%= image_tag product.image, class: "product-image", alt: "product.name" %>
           <% else %>
             <div class="no-image">No Image</div>
           <% end %>
@@ -25,7 +23,6 @@
     <% end %>
   </div>
 
-  <!-- Pagination -->
   <div class="pagination-wrapper mt-4 mb-5">
     <%= paginate @products %>
   </div>
