@@ -1,15 +1,20 @@
 <%= form_with url: search_path, method: :get, local: true, class: "search-form" do |f| %>
-  <div class="search-fields">
-    <%= f.label :keyword, "Search Products" %>
-    <%= f.text_field :keyword, value: params[:keyword], placeholder: "Enter keyword..." %>
-  </div>
+  <div class="search-fields-container">
+    <div class="search-fields">
+      <%= f.label :keyword, "Search Products" %>
+      <%= f.text_field :keyword, value: params[:keyword], placeholder: "Enter keyword...", class: "form-control" %>
+    </div>
 
-  <div class="search-fields">
-    <%= f.label :category_id, "Category" %>
-    <%= f.select :category_id,
-        options_from_collection_for_select(@categories, :id, :name, params[:category_id]),
-        include_blank: "All Categories" %>
-  </div>
+    <div class="search-fields">
+      <%= f.label :category_id, "Category" %>
+      <%= f.select :category_id,
+          options_from_collection_for_select(@categories, :id, :name, params[:category_id]),
+          include_blank: "All Categories",
+          class: "form-select" %>
+    </div>
 
-  <%= f.submit "Search", class: "btn-search" %>
+    <div class="search-fields">
+      <%= f.submit "Search", class: "btn-search" %>
+    </div>
+  </div>
 <% end %>

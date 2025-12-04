@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_03_194124) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_04_002641) do
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
     t.text "body"
@@ -119,6 +119,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_194124) do
     t.decimal "total", precision: 10, scale: 2, default: "0.0", null: false
     t.integer "status", default: 0, null: false
     t.string "stripe_session_id"
+    t.string "name"
+    t.string "phone_number"
+    t.string "address"
+    t.string "city"
+    t.integer "province_id"
+    t.string "postal_code"
     t.index ["stripe_session_id"], name: "index_orders_on_stripe_session_id", unique: true
   end
 
@@ -140,6 +146,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_03_194124) do
     t.boolean "on_sale", default: false
     t.boolean "is_new", default: true
     t.decimal "sale_price"
+    t.integer "category_id"
   end
 
   create_table "products_categories", force: :cascade do |t|

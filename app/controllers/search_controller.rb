@@ -9,22 +9,23 @@ class SearchController < ApplicationController
     # Filter by keyword
     if @keyword.present?
       keyword = "%#{@keyword.downcase}%"
-
       @products = @products.where(
-        "LOWER(name) LIKE :search OR LOWER(description) LIKE :search",
+        "LOWER(products.name) LIKE :search OR LOWER(products.description) LIKE :search",
         search: keyword
       )
     end
 
-    # Filter by category (only if selected)
+    # Filter by single category (many-to-many)
     if @category_id.present? && @category_id != ""
-      @products = @products.where(category_id: @category_id)
+      @products = @products.joins(:categories)
+                           .where(categories: { id: @category_id })
+                           .distinct
     end
 
     # Paginate results
     @products = @products.page(params[:page]).per(12)
 
-    # For category dropdown list
-    @categories = Category.all
+    # Get all categories for dropdown
+    @categories = Category.order(:name)
   end
 end

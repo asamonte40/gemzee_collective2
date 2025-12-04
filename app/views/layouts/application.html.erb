@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title><%= content_for(:title) || "Gemzee Collective2" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -104,13 +104,6 @@
     <main class="container my-4">
       <%= yield %>
     </main>
-
-    <!-- ================== FOOTER ================== -->
-    <footer class="footer-custom mt-5">
-    <div class="container text-center py-3">
-      &copy; <%= Date.today.year %> Gemzee Collective. All Rights Reserved.
-    </div>
-  </footer>
 
   </body>
 </html>

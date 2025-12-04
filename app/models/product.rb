@@ -1,5 +1,5 @@
 class Product < ApplicationRecord
-  # belongs_to :category, optional: true
+  belongs_to :category, optional: true
   has_many :order_items
   has_many :products_categories, dependent: :destroy
   has_many :categories, through: :products_categories

@@ -136,62 +136,87 @@
     </div>
 
     <!-- Order Summary Sidebar -->
-    <div class="col-lg-4">
-      <div class="card shadow-sm sticky-top" style="top: 20px;">
-        <div class="card-header bg-white">
-          <h3 class="h5 mb-0">Order Summary</h3>
-        </div>
-        <div class="card-body">
-          <!-- Cart Items -->
-          <div class="mb-3">
-            <% @cart_items.each do |item| %>
-              <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
-                <div class="flex-grow-1">
-                  <h6 class="mb-1"><%= item[:product].name %></h6>
-                  <small class="text-muted">Qty: <%= item[:quantity] %></small>
-                </div>
-                <div class="text-end">
-                  <strong><%= number_to_currency(item[:product].price * item[:quantity]) %></strong>
-                </div>
-              </div>
-            <% end %>
-          </div>
+<div class="col-lg-4 mb-4">
+  <div class="card shadow-sm sticky-top" style="top: 20px;">
+    <div class="card-header bg-white">
+      <h3 class="h5 mb-0">Order Summary</h3>
+    </div>
 
-          <!-- Totals -->
-          <div class="border-top pt-3">
-            <div class="d-flex justify-content-between mb-2">
-              <span>Subtotal:</span>
-              <strong><%= number_to_currency(@subtotal) %></strong>
+    <div class="card-body">
+
+      <!-- Cart Items -->
+      <div class="mb-3">
+        <% @cart_items.each do |item| %>
+          <div class="d-flex justify-content-between align-items-start mb-3 pb-3 border-bottom">
+            <div class="flex-grow-1">
+              <h6 class="mb-1"><%= item[:product].name %></h6>
+              <small class="text-muted">Qty: <%= item[:quantity] %></small>
             </div>
-
-            <% if @gst > 0 %>
-              <div class="d-flex justify-content-between mb-2">
-                <span>GST (<%= (@user.province.gst rescue 0) %>%):</span>
-                <strong><%= number_to_currency(@gst) %></strong>
-              </div>
-            <% end %>
-
-            <% if @pst > 0 %>
-              <div class="d-flex justify-content-between mb-2">
-                <span>PST (<%= (@user.province.pst rescue 0) %>%):</span>
-                <strong><%= number_to_currency(@pst) %></strong>
-              </div>
-            <% end %>
-
-            <% if @hst > 0 %>
-              <div class="d-flex justify-content-between mb-2">
-                <span>HST (<%= (@user.province.hst rescue 0) %>%):</span>
-                <strong><%= number_to_currency(@hst) %></strong>
-              </div>
-            <% end %>
-
-            <div class="d-flex justify-content-between pt-3 border-top mt-3">
-              <strong class="fs-5">Total:</strong>
-              <strong class="fs-5 text-success"><%= number_to_currency(@total) %></strong>
+            <div class="text-end">
+              <strong><%= number_to_currency(item[:product].price * item[:quantity]) %></strong>
             </div>
           </div>
+        <% end %>
+      </div>
+
+      <!-- Totals -->
+      <div class="border-top pt-3">
+
+        <div class="d-flex justify-content-between mb-2">
+          <span>Subtotal:</span>
+          <strong><%= number_to_currency(@subtotal) %></strong>
         </div>
+
+        <% if @gst > 0 %>
+          <div class="d-flex justify-content-between mb-2">
+            <span>GST (<%= (@user.province.gst rescue 0) %>%)</span>
+            <strong><%= number_to_currency(@gst) %></strong>
+          </div>
+        <% end %>
+
+        <% if @pst > 0 %>
+          <div class="d-flex justify-content-between mb-2">
+            <span>PST (<%= (@user.province.pst rescue 0) %>%)</span>
+            <strong><%= number_to_currency(@pst) %></strong>
+          </div>
+        <% end %>
+
+        <% if @hst > 0 %>
+          <div class="d-flex justify-content-between mb-2">
+            <span>HST (<%= (@user.province.hst rescue 0) %>%)</span>
+            <strong><%= number_to_currency(@hst) %></strong>
+          </div>
+        <% end %>
+
+        <div class="d-flex justify-content-between pt-3 border-top mt-3">
+          <strong class="fs-5">Total:</strong>
+          <strong class="fs-5 text-success"><%= number_to_currency(@total) %></strong>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
+
+<!-- JS for toggling "Use a different address" -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const useSavedYes = document.getElementById("use_saved_yes");
+    const useSavedNo = document.getElementById("use_saved_no");
+    const newAddressFields = document.getElementById("new-address-fields");
+
+    function toggleAddressFields() {
+      if (useSavedNo.checked) {
+        newAddressFields.style.display = "block";
+      } else {
+        newAddressFields.style.display = "none";
+      }
+    }
+
+    useSavedYes.addEventListener("change", toggleAddressFields);
+    useSavedNo.addEventListener("change", toggleAddressFields);
+
+    // Initialize
+    toggleAddressFields();
+  });
+</script>
